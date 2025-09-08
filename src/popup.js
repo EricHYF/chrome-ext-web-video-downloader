@@ -24,6 +24,11 @@ class VideoDownloaderPopup {
       this.downloadAll();
     });
 
+    // 打开下载文件夹按钮
+    document.getElementById('openFolderBtn').addEventListener('click', () => {
+      this.openDownloadsFolder();
+    });
+
     // 设置按钮
     document.getElementById('settingsBtn').addEventListener('click', () => {
       this.showSettings();
@@ -385,11 +390,28 @@ class VideoDownloaderPopup {
     }, 3000);
   }
 
+  async openDownloadsFolder() {
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: 'OPEN_DOWNLOADS_FOLDER'
+      });
+
+      if (response.success) {
+        this.showNotification('已打开下载文件夹', 'success');
+      } else {
+        this.showNotification('打开下载文件夹失败: ' + (response.message || '未知错误'), 'error');
+      }
+    } catch (error) {
+      console.error('打开下载文件夹失败:', error);
+      this.showNotification('打开下载文件夹失败: ' + error.message, 'error');
+    }
+  }
+
   // 设置管理
-  showSettings() {
+  async showSettings() {
     const settingsPanel = document.getElementById('settingsPanel');
     settingsPanel.style.display = 'block';
-    this.loadSettingsToForm();
+    await this.loadSettingsToForm();
   }
 
   hideSettings() {
@@ -397,22 +419,47 @@ class VideoDownloaderPopup {
     settingsPanel.style.display = 'none';
   }
 
-  loadSettingsToForm() {
-    document.getElementById('downloadPath').value = this.settings.downloadPath || '';
+  async loadSettingsToForm() {
+    // 获取当前下载路径
+    try {
+      const pathResponse = await chrome.runtime.sendMessage({
+        type: 'GET_DOWNLOADS_PATH'
+      });
+      
+      if (pathResponse.success) {
+        document.getElementById('downloadPath').value = pathResponse.path || '';
+        document.getElementById('downloadPath').placeholder = `当前: ${pathResponse.path || 'Downloads'}`;
+      }
+    } catch (error) {
+      console.error('获取下载路径失败:', error);
+    }
+
     document.getElementById('videoQuality').value = this.settings.videoQuality || 'auto';
     document.getElementById('mergeSegments').checked = this.settings.mergeSegments !== false;
     document.getElementById('filenameTemplate').value = this.settings.filenameTemplate || '{title}_{timestamp}';
   }
 
   async saveSettings() {
+    const newDownloadPath = document.getElementById('downloadPath').value.trim();
+    
     this.settings = {
-      downloadPath: document.getElementById('downloadPath').value,
+      downloadPath: newDownloadPath || 'Downloads',
       videoQuality: document.getElementById('videoQuality').value,
       mergeSegments: document.getElementById('mergeSegments').checked,
       filenameTemplate: document.getElementById('filenameTemplate').value
     };
 
     await chrome.storage.sync.set({ videoDownloaderSettings: this.settings });
+    
+    // 通知后台脚本重新初始化下载路径
+    try {
+      await chrome.runtime.sendMessage({
+        type: 'REINITIALIZE_DOWNLOADS_PATH'
+      });
+    } catch (error) {
+      console.error('重新初始化下载路径失败:', error);
+    }
+    
     this.showNotification('设置已保存', 'success');
     this.hideSettings();
   }
