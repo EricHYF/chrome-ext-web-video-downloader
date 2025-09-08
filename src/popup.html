@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>视频下载器</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">
+        <span class="icon">🎬</span>
+        视频下载器
+      </h1>
+      <button id="refreshBtn" class="refresh-btn" title="重新扫描">
+        <span class="refresh-icon">🔄</span>
+      </button>
+    </header>
+
+    <div class="status-bar">
+      <span id="statusText">正在扫描视频...</span>
+      <div class="loading-spinner" id="loadingSpinner"></div>
+    </div>
+
+    <div class="video-list" id="videoList">
+      <!-- 视频列表将在这里动态生成 -->
+    </div>
+
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <div class="empty-icon">📹</div>
+      <p>未检测到视频</p>
+      <p class="empty-hint">请确保页面已完全加载，或点击刷新重新扫描</p>
+    </div>
+
+    <div class="actions">
+      <button id="downloadAllBtn" class="action-btn primary" disabled>
+        <span class="btn-icon">⬇️</span>
+        下载全部
+      </button>
+      <button id="settingsBtn" class="action-btn secondary">
+        <span class="btn-icon">⚙️</span>
+        设置
+      </button>
+    </div>
+
+    <!-- 设置面板 -->
+    <div class="settings-panel" id="settingsPanel" style="display: none;">
+      <div class="settings-header">
+        <h3>下载设置</h3>
+        <button id="closeSettingsBtn" class="close-btn">×</button>
+      </div>
+      
+      <div class="settings-content">
+        <div class="setting-item">
+          <label for="downloadPath">下载路径:</label>
+          <input type="text" id="downloadPath" placeholder="留空使用默认下载文件夹">
+        </div>
+        
+        <div class="setting-item">
+          <label for="videoQuality">视频质量:</label>
+          <select id="videoQuality">
+            <option value="auto">自动选择最高质量</option>
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+            <option value="480p">480p</option>
+          </select>
+        </div>
+        
+        <div class="setting-item">
+          <label for="mergeSegments">合并视频片段:</label>
+          <input type="checkbox" id="mergeSegments" checked>
+          <span class="checkbox-label">自动合并多段视频</span>
+        </div>
+        
+        <div class="setting-item">
+          <label for="filenameTemplate">文件名模板:</label>
+          <input type="text" id="filenameTemplate" value="{title}_{timestamp}" 
+                 placeholder="{title}_{timestamp}">
+          <small class="setting-hint">
+            可用变量: {title}, {timestamp}, {index}
+          </small>
+        </div>
+      </div>
+      
+      <div class="settings-actions">
+        <button id="saveSettingsBtn" class="action-btn primary">保存设置</button>
+        <button id="resetSettingsBtn" class="action-btn secondary">重置</button>
+      </div>
+    </div>
+
+    <!-- 下载进度面板 -->
+    <div class="download-panel" id="downloadPanel" style="display: none;">
+      <div class="download-header">
+        <h3>下载进度</h3>
+        <button id="closeDownloadBtn" class="close-btn">×</button>
+      </div>
+      
+      <div class="download-content" id="downloadContent">
+        <!-- 下载进度项将在这里动态生成 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 视频项模板 -->
+  <template id="videoItemTemplate">
+    <div class="video-item" data-video-id="">
+      <div class="video-info">
+        <div class="video-thumbnail">
+          <span class="video-type-badge"></span>
+        </div>
+        <div class="video-details">
+          <h3 class="video-title"></h3>
+          <p class="video-url"></p>
+          <div class="video-meta">
+            <span class="video-duration"></span>
+            <span class="video-size"></span>
+            <span class="video-format"></span>
+          </div>
+        </div>
+      </div>
+      <div class="video-actions">
+        <button class="download-btn" data-action="download">
+          <span class="btn-icon">⬇️</span>
+        </button>
+        <button class="preview-btn" data-action="preview">
+          <span class="btn-icon">👁️</span>
+        </button>
+        <button class="copy-btn" data-action="copy">
+          <span class="btn-icon">📋</span>
+        </button>
+      </div>
+    </div>
+  </template>
+
+  <!-- 下载进度项模板 -->
+  <template id="downloadItemTemplate">
+    <div class="download-item" data-download-id="">
+      <div class="download-info">
+        <h4 class="download-title"></h4>
+        <div class="download-progress">
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <span class="progress-text">0%</span>
+        </div>
+        <div class="download-meta">
+          <span class="download-speed"></span>
+          <span class="download-eta"></span>
+          <span class="download-status"></span>
+        </div>
+      </div>
+      <div class="download-actions">
+        <button class="pause-btn" data-action="pause">⏸️</button>
+        <button class="cancel-btn" data-action="cancel">❌</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="popup.js"></script>
+</body>
+</html>

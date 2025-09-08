@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频下载器测试页面</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+        .section h2 {
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+        .test-video {
+            margin: 20px 0;
+            padding: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: white;
+        }
+        .test-video h3 {
+            color: #475569;
+            margin-bottom: 12px;
+        }
+        video {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+        }
+        .video-info {
+            margin-top: 12px;
+            padding: 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #64748b;
+        }
+        .test-button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 8px 4px;
+            font-size: 14px;
+        }
+        .test-button:hover {
+            background: #4338ca;
+        }
+        .test-result {
+            margin-top: 12px;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+        .test-result.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .test-result.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .instructions {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .instructions h3 {
+            color: #1d4ed8;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎬 视频下载器扩展测试页面</h1>
+        <div class="instructions">
+            <h3>测试说明：</h3>
+            <ol>
+                <li>确保已安装视频下载器Chrome扩展</li>
+                <li>刷新此页面，等待页面完全加载</li>
+                <li>点击浏览器工具栏中的扩展图标</li>
+                <li>查看扩展是否检测到页面中的视频</li>
+                <li>测试各种下载功能</li>
+            </ol>
+        </div>
+    </header>
+
+    <main>
+        <!-- HTML5 Video 测试 -->
+        <section class="section">
+            <h2>📹 HTML5 视频测试</h2>
+            
+            <div class="test-video">
+                <h3>标准MP4视频</h3>
+                <video controls poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNTAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzRmNDZlNSIvPgogIDx0ZXh0IHg9IjI1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIyNCIgZm9udC1mYW1pbHk9IkFyaWFsIj7mu4DlrZfop4bpopE8L3RleHQ+Cjwvc3ZnPg==">
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.webm" type="video/webm">
+                    您的浏览器不支持视频播放。
+                </video>
+                <div class="video-info">
+                    <strong>视频源：</strong> BigBuckBunny.mp4 (样例视频)<br>
+                    <strong>格式：</strong> MP4/WebM<br>
+                    <strong>期望结果：</strong> 扩展应该检测到这个视频并显示下载选项
+                </div>
+                <button class="test-button" onclick="testVideoDetection('html5-mp4')">测试检测</button>
+                <div id="result-html5-mp4" class="test-result"></div>
+            </div>
+
+            <div class="test-video">
+                <h3>多源视频</h3>
+                <video controls id="multi-source-video">
+                    <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" type="video/mp4">
+                    <source src="https://sample-videos.com/zip/10/webm/SampleVideo_1280x720_1mb.webm" type="video/webm">
+                    <source src="https://sample-videos.com/zip/10/avi/SampleVideo_1280x720_1mb.avi" type="video/avi">
+                </video>
+                <div class="video-info">
+                    <strong>多格式源：</strong> MP4, WebM, AVI<br>
+                    <strong>期望结果：</strong> 扩展应该检测到多个视频源
+                </div>
+                <button class="test-button" onclick="testVideoDetection('multi-source')">测试检测</button>
+                <div id="result-multi-source" class="test-result"></div>
+            </div>
+        </section>
+
+        <!-- 嵌入式视频测试 -->
+        <section class="section">
+            <h2>🎭 嵌入式视频测试</h2>
+            
+            <div class="test-video">
+                <h3>iframe嵌入视频</h3>
+                <iframe width="500" height="300" 
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                        frameborder="0" 
+                        allowfullscreen>
+                </iframe>
+                <div class="video-info">
+                    <strong>类型：</strong> YouTube嵌入视频<br>
+                    <strong>期望结果：</strong> 扩展可能检测到iframe中的视频资源
+                </div>
+                <button class="test-button" onclick="testVideoDetection('iframe')">测试检测</button>
+                <div id="result-iframe" class="test-result"></div>
+            </div>
+
+            <div class="test-video">
+                <h3>自定义播放器</h3>
+                <div class="video-player-container" 
+                     data-video-url="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                     data-title="大象之梦">
+                    <div style="width: 500px; height: 300px; background: #000; display: flex; align-items: center; justify-content: center; color: white; border-radius: 8px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">▶️</div>
+                            <div>自定义视频播放器</div>
+                            <div style="font-size: 14px; opacity: 0.7;">点击播放视频</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <strong>数据属性：</strong> data-video-url<br>
+                    <strong>期望结果：</strong> 扩展应该检测到data属性中的视频URL
+                </div>
+                <button class="test-button" onclick="testVideoDetection('custom-player')">测试检测</button>
+                <div id="result-custom-player" class="test-result"></div>
+            </div>
+        </section>
+
+        <!-- 动态加载测试 -->
+        <section class="section">
+            <h2>⚡ 动态加载测试</h2>
+            
+            <div class="test-video">
+                <h3>JavaScript动态创建视频</h3>
+                <div id="dynamic-video-container"></div>
+                <div class="video-info">
+                    <strong>加载方式：</strong> JavaScript动态创建video元素<br>
+                    <strong>期望结果：</strong> 扩展应该检测到动态添加的视频
+                </div>
+                <button class="test-button" onclick="loadDynamicVideo()">加载动态视频</button>
+                <button class="test-button" onclick="testVideoDetection('dynamic')">测试检测</button>
+                <div id="result-dynamic" class="test-result"></div>
+            </div>
+
+            <div class="test-video">
+                <h3>AJAX请求模拟</h3>
+                <div class="video-info">
+                    <strong>模拟场景：</strong> 模拟AJAX请求获取视频URL<br>
+                    <strong>期望结果：</strong> 扩展应该拦截到视频相关的网络请求
+                </div>
+                <button class="test-button" onclick="simulateAjaxRequest()">模拟AJAX请求</button>
+                <button class="test-button" onclick="testVideoDetection('ajax')">测试检测</button>
+                <div id="result-ajax" class="test-result"></div>
+            </div>
+        </section>
+
+        <!-- HLS流测试 -->
+        <section class="section">
+            <h2>📡 HLS流媒体测试</h2>
+            
+            <div class="test-video">
+                <h3>模拟HLS流</h3>
+                <div class="video-info">
+                    <strong>注意：</strong> 这是模拟的HLS流URL，用于测试检测功能<br>
+                    <strong>期望结果：</strong> 扩展应该识别.m3u8格式并提供HLS下载选项
+                </div>
+                <button class="test-button" onclick="simulateHLSRequest()">模拟HLS请求</button>
+                <button class="test-button" onclick="testVideoDetection('hls')">测试检测</button>
+                <div id="result-hls" class="test-result"></div>
+            </div>
+        </section>
+
+        <!-- 测试结果汇总 -->
+        <section class="section">
+            <h2>📊 测试结果汇总</h2>
+            <div id="test-summary">
+                <p>点击各部分的"测试检测"按钮来验证扩展功能。</p>
+                <p>测试完成后，这里会显示汇总结果。</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 测试辅助函数
+        let testResults = {};
+
+        function testVideoDetection(testType) {
+            const resultDiv = document.getElementById(`result-${testType}`);
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result success';
+            resultDiv.innerHTML = '✅ 请检查扩展弹窗是否检测到此视频';
+            
+            testResults[testType] = 'tested';
+            updateTestSummary();
+        }
+
+        function loadDynamicVideo() {
+            const container = document.getElementById('dynamic-video-container');
+            container.innerHTML = `
+                <video controls style="width: 100%; max-width: 500px;">
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+                    动态加载的视频
+                </video>
+            `;
+            
+            // 模拟视频加载事件
+            const video = container.querySelector('video');
+            video.addEventListener('loadstart', function() {
+                console.log('动态视频开始加载:', video.src);
+            });
+        }
+
+        function simulateAjaxRequest() {
+            // 模拟AJAX请求视频资源
+            const videoUrls = [
+                'https://example.com/video1.mp4',
+                'https://example.com/stream/video.m3u8',
+                'https://example.com/media/video.webm'
+            ];
+
+            videoUrls.forEach(url => {
+                // 模拟fetch请求
+                console.log('模拟请求:', url);
+                
+                // 创建一个模拟的网络请求
+                if (window.fetch) {
+                    fetch(url).catch(e => {
+                        console.log('模拟请求完成（预期失败）:', url);
+                    });
+                }
+            });
+
+            const resultDiv = document.getElementById('result-ajax');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result success';
+            resultDiv.innerHTML = '✅ 已发送模拟请求，检查控制台和扩展检测结果';
+        }
+
+        function simulateHLSRequest() {
+            // 模拟HLS播放列表请求
+            const hlsUrl = 'https://example.com/stream/playlist.m3u8';
+            
+            console.log('模拟HLS请求:', hlsUrl);
+            
+            // 模拟XMLHttpRequest
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', hlsUrl, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    console.log('HLS请求完成（模拟）');
+                }
+            };
+            
+            try {
+                xhr.send();
+            } catch (e) {
+                console.log('HLS模拟请求发送完成');
+            }
+
+            const resultDiv = document.getElementById('result-hls');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result success';
+            resultDiv.innerHTML = '✅ 已模拟HLS请求，检查扩展是否检测到.m3u8格式';
+        }
+
+        function updateTestSummary() {
+            const summary = document.getElementById('test-summary');
+            const totalTests = Object.keys(testResults).length;
+            const testedCount = Object.values(testResults).filter(r => r === 'tested').length;
+            
+            summary.innerHTML = `
+                <h3>测试进度：${testedCount}/${totalTests}</h3>
+                <p><strong>已测试的功能：</strong></p>
+                <ul>
+                    ${Object.keys(testResults).map(test => 
+                        `<li>${test}: ${testResults[test] === 'tested' ? '✅ 已测试' : '⏳ 待测试'}</li>`
+                    ).join('')}
+                </ul>
+                <div style="margin-top: 16px; padding: 12px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px;">
+                    <strong>📋 测试清单：</strong>
+                    <ul style="margin: 8px 0;">
+                        <li>扩展图标是否出现在工具栏</li>
+                        <li>点击扩展图标是否显示弹窗</li>
+                        <li>弹窗中是否列出检测到的视频</li>
+                        <li>视频信息是否正确显示（标题、格式等）</li>
+                        <li>下载按钮是否可以点击</li>
+                        <li>下载功能是否正常工作</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('视频下载器测试页面已加载');
+            console.log('请确保已安装视频下载器扩展，然后点击扩展图标进行测试');
+            
+            // 添加一些测试用的视频URL到页面数据中
+            window.testVideoUrls = [
+                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+            ];
+        });
+
+        // 监听扩展消息（如果扩展尝试与页面通信）
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'VIDEO_DETECTED_INJECTED') {
+                console.log('检测到扩展发现的视频:', event.data);
+            }
+        });
+    </script>
+</body>
+</html>
